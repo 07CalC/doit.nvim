@@ -33,8 +33,37 @@ function M.delete(index)
 	end
 end
 
+function M.toggle_done_by_id(id)
+	local items = store.load()
+	for _, t in ipairs(items) do
+		if t.id == id then
+			t.done = not t.done
+			break
+		end
+	end
+	store.save(items)
+end
+
+function M.delete_by_id(id)
+	local items = store.load()
+	for i, t in ipairs(items) do
+		if t.id == id then
+			table.remove(items, i)
+			break
+		end
+	end
+	store.save(items)
+end
+
 function M.list()
-	return store.load()
+	local items = store.load()
+	table.sort(items, function(a, b)
+		if a.done == b.done then
+			return a.created_at < b.created_at
+		end
+		return not a.done and b.done
+	end)
+	return items
 end
 
 return M
