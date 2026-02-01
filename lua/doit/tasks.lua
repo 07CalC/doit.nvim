@@ -12,6 +12,7 @@ function M.add(title)
 		id = gen_id(),
 		title = title,
 		done = false,
+		pinned = false,
 		created_at = os.time(),
 	})
 	store.save(tasks)
@@ -31,6 +32,17 @@ function M.delete(index)
 		table.remove(tasks, index)
 		store.save(tasks)
 	end
+end
+
+function M.toggle_pin_by_id(id)
+	local items = store.load()
+	for _, t in ipairs(items) do
+		if t.id == id then
+			t.pinned = not t.pinned
+			break
+		end
+	end
+	store.save(items)
 end
 
 function M.toggle_done_by_id(id)
@@ -58,10 +70,16 @@ end
 function M.list()
 	local items = store.load()
 	table.sort(items, function(a, b)
-		if a.done == b.done then
-			return a.created_at < b.created_at
+		-- pinned first
+		if a.pinned ~= b.pinned then
+			return a.pinned
 		end
-		return not a.done and b.done
+		-- undone before done
+		if a.done ~= b.done then
+			return not a.done
+		end
+		-- aat the end done one
+		return a.created_at < b.created_at
 	end)
 	return items
 end
