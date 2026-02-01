@@ -2,6 +2,9 @@ local M = {}
 
 M.options = {
 	data_dir = vim.fn.stdpath("data") .. "/doit",
+	keymaps = {
+		open = "<leader><leader>d",
+	},
 }
 
 function M.setup(opts)

@@ -1,7 +1,9 @@
 local tasks = require("doit.tasks")
+local project = require("doit.project")
 
 local M = {}
 
+-- idk wtf is this ai told me to do it for making it purely readonly
 local function block_default_motions(buf)
 	local opts = { buffer = buf, silent = true, nowait = true }
 
@@ -74,6 +76,7 @@ end
 local state = {
 	buf = nil,
 	win = nil,
+	project_id = nil,
 }
 
 local function get_tasks()
@@ -154,6 +157,9 @@ local function with_task(fn)
 end
 
 function M.open()
+	-- Capture project context at open time to prevent context switching issues
+	state.project_id = project.set_context()
+
 	state.buf = vim.api.nvim_create_buf(false, true)
 	state.win = vim.api.nvim_open_win(state.buf, true, {
 		relative = "editor",
@@ -178,6 +184,13 @@ function M.open()
 	vim.wo[state.win].relativenumber = false
 	vim.wo[state.win].cursorline = true
 
+	vim.api.nvim_create_autocmd("BufWipeout", {
+		buffer = state.buf,
+		callback = function()
+			project.clear_context()
+		end,
+	})
+
 	render()
 
 	local map = function(lhs, rhs)
@@ -189,6 +202,7 @@ function M.open()
 	end
 
 	map("q", function()
+		project.clear_context()
 		vim.api.nvim_win_close(state.win, true)
 	end)
 
