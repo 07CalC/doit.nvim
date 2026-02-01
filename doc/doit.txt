@@ -1,0 +1,155 @@
+*doit.txt*  A simple project-scoped todo manager for Neovim
+
+Author: 07CalC <https://github.com/07CalC>
+Version: 1.0.0
+
+==============================================================================
+CONTENTS                                                  *doit-contents*
+
+1. Introduction ................ |doit-introduction|
+2. Installation ................ |doit-installation|
+3. Configuration ............... |doit-configuration|
+4. Commands .................... |doit-commands|
+5. Usage ....................... |doit-usage|
+6. Project Detection ........... |doit-project-detection|
+
+==============================================================================
+1. INTRODUCTION                                       *doit-introduction*
+
+doit.nvim is a minimal todo/task manager for Neovim. It provides a simple
+floating window interface for managing tasks that are automatically scoped
+to your current project.
+
+Key features:
+- Project-based task organization
+- Floating window UI
+- Pin important tasks to the top
+- Toggle tasks done/undone
+- Add and delete tasks
+- Minimal, distraction-free design
+
+==============================================================================
+2. INSTALLATION                                       *doit-installation*
+
+Install using your preferred plugin manager.
+
+Using lazy.nvim: >
+    {
+      "username/doit.nvim",
+      config = function()
+        require("doit").setup({})
+      end,
+    }
+<
+
+Using packer.nvim: >
+    use {
+      "username/doit.nvim",
+      config = function()
+        require("doit").setup({})
+      end,
+    }
+<
+
+==============================================================================
+3. CONFIGURATION                                     *doit-configuration*
+
+The plugin works with sensible defaults. Configure it by passing options to
+setup().
+
+                                                     *doit.setup()*
+require("doit").setup({opts})
+
+Parameters:
+  {opts}  Table with configuration options
+
+Options:
+  data_dir    Path to directory where tasks are stored.
+              Default: vim.fn.stdpath("data") .. "/doit"
+
+  keymaps     Table of keybindings or `false` to disable.
+              Default: { open = "<leader><leader>d" }
+
+Example configuration: >
+    require("doit").setup({
+      data_dir = vim.fn.stdpath("data") .. "/doit",
+      keymaps = {
+        open = "<leader><leader>d",
+      },
+    })
+<
+
+To disable default keymaps: >
+    require("doit").setup({
+      keymaps = false,
+    })
+<
+
+==============================================================================
+4. COMMANDS                                               *doit-commands*
+
+:DoitList                                                    *:DoitList*
+    Open the task list UI in a floating window.
+
+:DoitAdd {title}                                             *:DoitAdd*
+    Add a new task with the given title.
+
+    Example: >
+        :DoitAdd "Fix bug in authentication"
+        :DoitAdd "Review pull requests"
+    <
+
+==============================================================================
+5. USAGE                                                     *doit-usage*
+
+OPENING THE TASK LIST~
+
+Use your configured keybinding (default `<leader><leader>d`) or run
+`:DoitList`.
+
+TASK LIST KEYBINDINGS~
+
+The following keys work in the task list window:
+
+a           Add a new task (prompts for title)
+x           Toggle selected task done/undone
+<Enter>     Toggle selected task done/undone
+p           Pin or unpin the selected task
+d           Delete the selected task
+q           Close the task list
+
+TASK DISPLAY~
+
+Tasks are displayed with visual indicators:
+
+[ ]         Task is not done
+[x]         Task is done
+@           Task is pinned (appears at top)
+
+Tasks are automatically sorted:
+1. Pinned tasks first
+2. Incomplete tasks next
+3. Completed tasks last (by creation time)
+
+==============================================================================
+6. PROJECT DETECTION                               *doit-project-detection*
+
+doit automatically determines your project context using the following logic:
+
+1. Search for a `.git` directory starting from the current file,
+   walking up parent directories
+2. If no git repository found, use the current file's directory
+3. If no file is open, use Neovim's current working directory
+
+Each project gets a unique identifier based on its root path. Tasks are
+stored separately for each project and loaded automatically when you open
+the task list.
+
+DATA STORAGE~
+
+Tasks are stored as JSON files in the configured `data_dir` under the
+`projects/` subdirectory. Each project has its own file named with a hash
+of the project path.
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:
