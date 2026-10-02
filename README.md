@@ -22,7 +22,7 @@ A simple todo/task manager for Neovim that stays scoped to your project. Tasks a
 
 ```lua
 {
-  "username/doit.nvim",
+  "07CalC/doit.nvim",
   config = function()
     require("doit").setup({})
   end,
@@ -33,7 +33,7 @@ A simple todo/task manager for Neovim that stays scoped to your project. Tasks a
 
 ```lua
 use {
-  "username/doit.nvim",
+  "07CalC/doit.nvim",
   config = function()
     require("doit").setup({})
   end,
